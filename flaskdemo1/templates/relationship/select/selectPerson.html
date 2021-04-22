@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <script src="/static/js/echarts.js"></script>
+    <script src="/static/js/commonUse.js"></script>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+    <script src="/static/ajax/node/psersonNode.js"></script>
+    <link rel="stylesheet" href="/static/layui/css/layui.css"  media="all">
+    <title>SelectPersonNode</title>
+</head>
+<body>
+    <form class="layui-form" id="myform"   method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">身份证</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="idcard" name="idcard"  lay-verify="title" autocomplete="off" placeholder="请输入18位身份证" class="layui-input" >
+                </div>
+            <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name"  lay-verify="title" autocomplete="off" placeholder="请输入姓名" class="layui-input" >
+                </div>
+            <label class="layui-form-label">年龄</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="age" name="age" lay-verify="title" autocomplete="off" placeholder="请输入年龄" class="layui-input" >
+                </div>
+
+            <label class="layui-form-label">性别</label>
+                <div class="layui-input-inline">
+                    <select name="gender" id="gender">
+                        <option value="">请选择性别</option>
+                        <option value="男" >男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+
+            <label class="layui-form-label">出生日期</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="birthday" name="birthday"  lay-verify="title" autocomplete="off" placeholder="1999/11/18" class="layui-input" >
+                </div>
+
+            <label class="layui-form-label">学历</label>
+                <div class="layui-input-inline">
+{#                    <input type="text" id="degree" name="degree" lay-verify="title" autocomplete="off" placeholder="请输入学历" class="layui-input" >#}
+                    <select name="degree" id="degree">
+                        <option value="">请选择学历</option>
+                        <option value="学士" >学士</option>
+                        <option value="硕士">硕士</option>
+                        <option value="博士">博士</option>
+                    </select>
+                </div>
+
+            <label class="layui-form-label">工作</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="work" name="work" lay-verify="title" autocomplete="off" placeholder="请输入工作" class="layui-input" >
+                </div>
+
+            <label class="layui-form-label">所属公司</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="company" name="company" lay-verify="title" autocomplete="off" placeholder="请输入公司名称" class="layui-input" >
+                </div>
+
+
+            <label class="layui-form-label">住址</label>
+                <div class="layui-input-inline">
+                    <select name="province" id="province"  class="province" lay-verify="required" lay-search lay-filter="province">
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                        <select name="city" id="city" class="city" lay-verify="required" lay-search lay-filter="city">
+                        </select>
+                </div>
+                <div class="layui-input-inline">
+						<select name="district" id="district" class="district" lay-verify="required" lay-search>
+						</select>
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" id="home" name="home" lay-verify="title" autocomplete="off" placeholder="请输入详细住址" class="layui-input" >
+                </div>
+
+            <label class="layui-form-label">联系方式</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="phone" name="phone" lay-verify="title" autocomplete="off" placeholder="请输入联系方式" class="layui-input" >
+                </div>
+
+            <label class="layui-form-label">经济状况</label>
+                <div class="layui-input-inline">
+                    <select name="financialSit" id="financialSit">
+                        <option value="">请输入经济状况</option>
+                        <option value="差" >差</option>
+                        <option value="普通">普通</option>
+                        <option value="良好">良好</option>
+                        <option value="富裕">富裕</option>
+                    </select>
+                </div>
+
+
+        </div>
+
+
+
+
+        <input type="button" class="layui-btn" value="搜索人物" onclick="search()">
+{#        <input type="button" class="layui-btn" value="添加节点" onclick="add()">#}
+{#        <input type="button" class="layui-btn" value="修改节点" onclick="update()">#}
+{#        <input type="button" class="layui-btn" value="删除节点" onclick="del()">#}
+        <input type="button" class="layui-btn" value="重置" onclick="reset1()">
+        <button class="layui-btn layui-btn-normal"   onclick="confirmSelect()">选择</button>
+    </form>
+
+
+        <div id="chart" style="width:100%;height: 1200px;">
+    </div>
+
+    <label id="nid" title=""></label>
+    <label id="fkind" title=""></label>
+
+    <script src="/static/layui/layui.js"></script>
+    <script>
+        function confirmSelect() {
+            var data= document.getElementById('nid').title;
+            console.log(data);
+            let a=parent.ChooseValues(data);
+
+                var index= parent.layer.getFrameIndex(window.name);
+
+                parent.layer.close(index);
+                {#return false;#}
+
+        }
+       reset1();
+    </script>
+
+
+    <script type="text/javascript" >
+    var mychart=echarts.init(document.getElementById('chart'));
+    var option={
+        title:{
+            text:'SelectPersonNode'
+        },
+        tooltip:{
+            show:true,
+            showContent: true,
+            enterable: true,
+            formatter:function (a) {
+                return nodetip(a);
+            }
+        },
+        animationDurationUpdate:0,
+        animationEasingUpdate:'quinticInOut',
+        series: [
+        {
+            type: 'graph',
+            layout: 'force',
+            symbolSize: 80,
+            roam: true,
+            animation: false,
+            label: {
+                color:'black',
+                show : true,
+                fontSize: $(window).width()*0.012,
+                formatter: function (param) {
+                    return param.name.replaceAll(' ','\n');
+                },
+
+            },
+            edgeSymbol: ['none', 'arrow'],
+            edgeSymbolSize: [4, 10],
+            edgeLabel: {
+                normal: {
+                    fontSize: 10,
+                  show: true,
+                  formatter: function(x) {
+                    return x.data['label'];
+                  }
+                }
+            },
+            force: {
+                repulsion: 500, //斥力
+                edgeLength: [100, 500], //默认距离
+                gravity:0.05,
+              },
+            draggable: true,
+            itemStyle:{
+                color: function (data) {
+                    return colors(data);
+                },
+            },
+        }
+    ]
+    }
+    mychart.showLoading({
+		text: '正在加载中，请耐心等待！',
+		color: '#1890ff',
+		textColor: '#000',
+		maskColor: 'rgba(255, 255, 255, 0.8)',
+	});
+
+    mychart.setOption(option);
+
+    //点击事件
+    mychart.on('click',function (info) {
+
+        console.log(info.data);
+        document.getElementById('nid').title=info.data['id'];
+        document.getElementById('fkind').title=info.data['label'][0];
+
+        document.getElementById('idcard').value=info.data['idcard'];
+        document.getElementById('name').value=info.data['name'];
+        document.getElementById('age').value=info.data['age'];
+        var select = document.getElementById('gender');
+        if ('男'==info.data['sex']){
+            select.options[1].selected=true;
+            select.options[1].focused=true;
+            layui.form.render("select") ;
+        }
+        else if ('女'==info.data['sex']) {
+            select.options[2].selected=true;
+            layui.form.render("select") ;
+        }
+        else {
+            select.options[0].selected=true;
+            layui.form.render("select");
+        }
+        document.getElementById('birthday').value=info.data['birthday'];
+        select = document.getElementById('degree');
+        if ('学士'==info.data['education']){
+            select.options[1].selected=true;
+            layui.form.render("select") ;
+        }
+        else if ('硕士'==info.data['education']) {
+            select.options[2].selected=true;
+            layui.form.render("select") ;
+        }
+        else if ('博士'==info.data['education']) {
+            select.options[3].selected=true;
+            layui.form.render("select") ;
+        }
+        else {
+            select.options[0].selected=true;
+            layui.form.render("select") ;
+        }
+        document.getElementById('work').value=info.data['occupation'];
+        document.getElementById('company').value=info.data['company'];
+        document.getElementById('home').value=info.data['home'];
+        pca($(".province"),info.data['province']);
+        pca($(".city"),info.data['city']);
+        pca($(".district"),info.data['area']);
+
+        document.getElementById('phone').value=info.data['phone'];
+
+         select = document.getElementById('financialSit');
+        if ('差'==info.data['financialSit']){
+            select.options[1].selected=true;
+            layui.form.render("select") ;
+        }
+        else if ('普通'==info.data['financialSit']) {
+            select.options[2].selected=true;
+            layui.form.render("select") ;
+        }
+        else if ('良好'==info.data['financialSit']) {
+            select.options[3].selected=true;
+            layui.form.render("select") ;
+        }
+        else if ('富裕'==info.data['financialSit']) {
+            select.options[4].selected=true;
+            layui.form.render("select") ;
+        }
+        else {
+            select.options[0].selected=true;
+            layui.form.render("select") ;
+        }
+    })
+
+    {#// 鼠标拖拽固定#}
+    {#mychart.on('mouseup', function (params) {#}
+    {#      var option = mychart.getOption();#}
+    {#      option.series[0].data[params.dataIndex].x = params.event.offsetX;#}
+    {#      option.series[0].data[params.dataIndex].y = params.event.offsetY;#}
+    {#      option.series[0].data[params.dataIndex].fixed = true;#}
+    {#      //设置文字#}
+    {#         option.series[0].label.fontSize = fontSize;#}
+    {#         option.series[0].edgeLabel.textStyle.fontSize = fontSize;#}
+    {#      mychart.setOption(option);#}
+    {#    });#}
+{##}
+{#     myECharts.on('graphRoam', function(e) {#}
+{#    const option = that.echartsGraph.getOption(); // 获得当前option.series的zoom#}
+{#    const textPercent = (option.series[0].zoom - 0.8) / 0.8; // 计算比例,我设置zoom的初始值是0.8#}
+{#    option.series[0].label.fontSize = 9 + 9 * textPercent // 等比例计算fontSize#}
+{#    that.echartsGraph.setOption(option); // setOption#}
+{#  });#}
+
+
+    $.ajax({
+        //url:"/node/prestext",
+        url:"/general/nodeRes/person",
+        type:"POST",
+        dataType:"json",
+        success:function (data) {
+            //console.log(data['nodes']);
+            mychart.hideLoading();
+            mychart.setOption({
+                series:[{
+                    data:data['nodes'],
+                    links:data['links'],
+                },
+                ]
+            });
+        }
+    })
+</script>
+</body>
+</html>
